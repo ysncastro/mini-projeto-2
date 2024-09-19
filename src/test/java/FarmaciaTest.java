@@ -163,6 +163,8 @@ class FarmaciaTest {
         assertTrue(output.contains("Ibuprofeno"));
     }
 
+    //aaa
+
     @Test
     void testListarFuncionarios() {
         Farmacia spyFarmacia = criarSpyFarmacia();
