@@ -1,7 +1,6 @@
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import projetos.Farmacia;
 import projetos.Funcionario;
 import projetos.Medicamento;
@@ -37,17 +36,24 @@ class FarmaciaTest {
         System.setOut(originalOut);
     }
 
+    private Farmacia criarSpyFarmacia() {
+        return spy(farmacia);
+    }
+
     @Test
     void testComprarMedicamento_Sucesso() {
-        Farmacia spyFarmacia = spy(farmacia);
+        Farmacia spyFarmacia = criarSpyFarmacia();
         doReturn("Paracetamol").when(spyFarmacia).obterEntradaUsuario("Digite o nome do medicamento:");
         doReturn("A").when(spyFarmacia).obterEntradaUsuario("Digite o nome do funcionário (A, B, C, D):");
         doReturn("1").when(spyFarmacia).obterEntradaUsuario("Quantos Paracetamol você quer comprar?");
 
         spyFarmacia.comprarMedicamento();
 
-        assertEquals(99, spyFarmacia.getMedicamentos().get(0).getQuantidadeEmEstoque());
-        assertEquals(10, spyFarmacia.getFuncionarios().get(0).getBonus());
+        Medicamento paracetamol = spyFarmacia.getMedicamentos().get(0);
+        Funcionario funcionario = spyFarmacia.getFuncionarios().get(0);
+
+        assertEquals(99, paracetamol.getQuantidadeEmEstoque());
+        assertEquals(10, funcionario.getBonus());
         assertEquals(5.5, spyFarmacia.getLucro());
 
         String output = outputStream.toString().trim();
@@ -56,7 +62,7 @@ class FarmaciaTest {
 
     @Test
     void testComprarMedicamento_MedicamentoForaDeEstoque() {
-        Farmacia spyFarmacia = spy(farmacia);
+        Farmacia spyFarmacia = criarSpyFarmacia();
         doReturn("Ibuprofeno").when(spyFarmacia).obterEntradaUsuario("Digite o nome do medicamento:");
         doReturn("A").when(spyFarmacia).obterEntradaUsuario("Digite o nome do funcionário (A, B, C, D):");
         doReturn("1").when(spyFarmacia).obterEntradaUsuario("Quantos Ibuprofeno você quer comprar?");
@@ -65,14 +71,16 @@ class FarmaciaTest {
 
         String output = outputStream.toString().trim();
         assertEquals("Medicamento fora de estoque", output);
-        assertEquals(0, spyFarmacia.getMedicamentos().get(1).getQuantidadeEmEstoque());
+
+        Medicamento ibuprofeno = spyFarmacia.getMedicamentos().get(1);
+        assertEquals(0, ibuprofeno.getQuantidadeEmEstoque());
         assertEquals(0, spyFarmacia.getFuncionarios().get(0).getBonus());
         assertEquals(0, spyFarmacia.getLucro());
     }
 
     @Test
     void testComprarMedicamento_MedicamentoNaoEncontrado() {
-        Farmacia spyFarmacia = spy(farmacia);
+        Farmacia spyFarmacia = criarSpyFarmacia();
         doReturn("Medicamento não existente").when(spyFarmacia).obterEntradaUsuario("Digite o nome do medicamento:");
 
         spyFarmacia.comprarMedicamento();
@@ -87,7 +95,7 @@ class FarmaciaTest {
 
     @Test
     void testComprarMedicamento_FuncionarioNaoEncontrado() {
-        Farmacia spyFarmacia = spy(farmacia);
+        Farmacia spyFarmacia = criarSpyFarmacia();
         doReturn("Paracetamol").when(spyFarmacia).obterEntradaUsuario("Digite o nome do medicamento:");
         doReturn("H").when(spyFarmacia).obterEntradaUsuario("Digite o nome do funcionário (A, B, C, D):");
         doReturn("2").when(spyFarmacia).obterEntradaUsuario("Quantos Paracetamol você quer comprar?");
@@ -100,14 +108,14 @@ class FarmaciaTest {
         String output = outputStream.toString().trim();
         assertEquals("Funcionário não encontrado", output);
 
-        assertEquals(100, spyFarmacia.getMedicamentos().get(0).getQuantidadeEmEstoque());
+        Medicamento paracetamol = spyFarmacia.getMedicamentos().get(0);
+        assertEquals(100, paracetamol.getQuantidadeEmEstoque());
         assertEquals(0, spyFarmacia.getLucro());
     }
 
-
     @Test
     void testObterQuantidadeMedicamentos_EntradaValida() {
-        Farmacia spyFarmacia = Mockito.spy(farmacia);
+        Farmacia spyFarmacia = criarSpyFarmacia();
         doReturn("5").when(spyFarmacia).obterEntradaUsuario("Quantos Paracetamol você quer comprar?");
 
         Medicamento medicamento = new Medicamento("Paracetamol", 10, 5.50);
@@ -118,7 +126,7 @@ class FarmaciaTest {
 
     @Test
     void testObterQuantidadeMedicamentos_EntradaInvalida() {
-        Farmacia spyFarmacia = Mockito.spy(farmacia);
+        Farmacia spyFarmacia = criarSpyFarmacia();
         doReturn("abc").doReturn("0").doReturn("5").when(spyFarmacia).obterEntradaUsuario("Quantos Paracetamol você quer comprar?");
 
         Medicamento medicamento = new Medicamento("Paracetamol", 10, 5.50);
@@ -146,7 +154,7 @@ class FarmaciaTest {
 
     @Test
     void testListarMedicamentos() {
-        Farmacia spyFarmacia = Mockito.spy(farmacia);
+        Farmacia spyFarmacia = criarSpyFarmacia();
         spyFarmacia.listarMedicamentos();
 
         String output = outputStream.toString().trim();
@@ -157,7 +165,7 @@ class FarmaciaTest {
 
     @Test
     void testListarFuncionarios() {
-        Farmacia spyFarmacia = Mockito.spy(farmacia);
+        Farmacia spyFarmacia = criarSpyFarmacia();
         spyFarmacia.listarFuncionarios();
 
         String output = outputStream.toString().trim();
@@ -167,7 +175,7 @@ class FarmaciaTest {
 
     @Test
     void testExibirLucro() {
-        Farmacia spyFarmacia = Mockito.spy(farmacia);
+        Farmacia spyFarmacia = criarSpyFarmacia();
         spyFarmacia.exibirLucro();
 
         String output = outputStream.toString().trim();
@@ -176,12 +184,11 @@ class FarmaciaTest {
 
     @Test
     void testListarInformacoesFarmacia() {
-        Farmacia spyFarmacia = Mockito.spy(farmacia);
+        Farmacia spyFarmacia = criarSpyFarmacia();
         spyFarmacia.listarInformacoesFarmacia();
 
         String output = outputStream.toString().trim();
         assertTrue(output.contains("Informações da Farmácia:"));
         assertTrue(output.contains("Lucro:"));
     }
-
 }
