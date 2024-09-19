@@ -1,5 +1,9 @@
 package projetos;
 
+import projetos.farmacia.Farmacia;
+import projetos.farmacia.Funcionario;
+import projetos.farmacia.Medicamento;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

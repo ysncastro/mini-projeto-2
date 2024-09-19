@@ -1,4 +1,6 @@
-import projetos.Medicamento;
+package utils;
+
+import projetos.farmacia.Medicamento;
 
 public class TestProvider {
 

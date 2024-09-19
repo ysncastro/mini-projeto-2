@@ -1,4 +1,6 @@
-package projetos;
+package projetos.farmacia;
+
+import projetos.utils.Formatador;
 
 public class Medicamento {
     private String nome;

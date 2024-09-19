@@ -1,9 +1,13 @@
+package farmacia;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import projetos.Farmacia;
-import projetos.Funcionario;
-import projetos.Medicamento;
+import org.mockito.Mockito;
+import projetos.farmacia.Farmacia;
+import projetos.farmacia.Funcionario;
+import projetos.farmacia.Medicamento;
+import utils.TestProvider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -42,7 +46,7 @@ class FarmaciaTest {
     void testComprarMedicamento_Sucesso() {
         Farmacia spyFarmacia = criarSpyFarmacia();
         doReturn("Paracetamol").when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_MEDICAMENTO);
-        doReturn(TestProvider.FUNCIONARIO_NOME).when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_FUNCIONARIO);
+        Mockito.doReturn(TestProvider.FUNCIONARIO_NOME).when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_FUNCIONARIO);
         doReturn("1").when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_QUANTIDADE_MEDICAMENTO_PARACETAMOL);
 
         spyFarmacia.comprarMedicamento();
@@ -62,7 +66,7 @@ class FarmaciaTest {
     void testComprarMedicamento_MedicamentoForaDeEstoque() {
         Farmacia spyFarmacia = criarSpyFarmacia();
         doReturn("Ibuprofeno").when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_MEDICAMENTO);
-        doReturn(TestProvider.FUNCIONARIO_NOME).when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_FUNCIONARIO);
+        Mockito.doReturn(TestProvider.FUNCIONARIO_NOME).when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_FUNCIONARIO);
         doReturn("1").when(spyFarmacia).obterEntradaUsuario("Quantos Ibuprofeno você quer comprar?");
 
         spyFarmacia.comprarMedicamento();

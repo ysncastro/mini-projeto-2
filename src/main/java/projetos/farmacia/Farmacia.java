@@ -1,4 +1,6 @@
-package projetos;
+package projetos.farmacia;
+
+import projetos.utils.Formatador;
 
 import java.util.List;
 import java.util.Optional;
