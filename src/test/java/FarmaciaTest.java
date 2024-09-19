@@ -22,10 +22,8 @@ class FarmaciaTest {
 
     @BeforeEach
     void setUp() {
-        Medicamento medicamento1 = new Medicamento("Paracetamol", 100, 5.50);
-        Medicamento medicamento2 = new Medicamento("Ibuprofeno", 0, 8.75);
-        Funcionario funcionario = new Funcionario("A", 2500.00);
-        List<Medicamento> medicamentos = Arrays.asList(medicamento1, medicamento2);
+        Funcionario funcionario = new Funcionario(TestProvider.FUNCIONARIO_NOME, 2500.00);
+        List<Medicamento> medicamentos = Arrays.asList(TestProvider.MEDICAMENTO_PARACETAMOL, TestProvider.MEDICAMENTO_IBUPROFENO);
         List<Funcionario> funcionarios = List.of(funcionario);
         farmacia = new Farmacia(medicamentos, funcionarios);
         System.setOut(new PrintStream(outputStream));
@@ -43,9 +41,9 @@ class FarmaciaTest {
     @Test
     void testComprarMedicamento_Sucesso() {
         Farmacia spyFarmacia = criarSpyFarmacia();
-        doReturn("Paracetamol").when(spyFarmacia).obterEntradaUsuario("Digite o nome do medicamento:");
-        doReturn("A").when(spyFarmacia).obterEntradaUsuario("Digite o nome do funcionário (A, B, C, D):");
-        doReturn("1").when(spyFarmacia).obterEntradaUsuario("Quantos Paracetamol você quer comprar?");
+        doReturn("Paracetamol").when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_MEDICAMENTO);
+        doReturn(TestProvider.FUNCIONARIO_NOME).when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_FUNCIONARIO);
+        doReturn("1").when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_QUANTIDADE_MEDICAMENTO_PARACETAMOL);
 
         spyFarmacia.comprarMedicamento();
 
@@ -63,8 +61,8 @@ class FarmaciaTest {
     @Test
     void testComprarMedicamento_MedicamentoForaDeEstoque() {
         Farmacia spyFarmacia = criarSpyFarmacia();
-        doReturn("Ibuprofeno").when(spyFarmacia).obterEntradaUsuario("Digite o nome do medicamento:");
-        doReturn("A").when(spyFarmacia).obterEntradaUsuario("Digite o nome do funcionário (A, B, C, D):");
+        doReturn("Ibuprofeno").when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_MEDICAMENTO);
+        doReturn(TestProvider.FUNCIONARIO_NOME).when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_FUNCIONARIO);
         doReturn("1").when(spyFarmacia).obterEntradaUsuario("Quantos Ibuprofeno você quer comprar?");
 
         spyFarmacia.comprarMedicamento();
@@ -81,11 +79,11 @@ class FarmaciaTest {
     @Test
     void testComprarMedicamento_MedicamentoNaoEncontrado() {
         Farmacia spyFarmacia = criarSpyFarmacia();
-        doReturn("Medicamento não existente").when(spyFarmacia).obterEntradaUsuario("Digite o nome do medicamento:");
+        doReturn("Medicamento não existente").when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_MEDICAMENTO);
 
         spyFarmacia.comprarMedicamento();
 
-        verify(spyFarmacia).obterEntradaUsuario("Digite o nome do medicamento:");
+        verify(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_MEDICAMENTO);
 
         String output = outputStream.toString().trim();
         assertEquals("Medicamento não encontrado", output);
@@ -96,14 +94,14 @@ class FarmaciaTest {
     @Test
     void testComprarMedicamento_FuncionarioNaoEncontrado() {
         Farmacia spyFarmacia = criarSpyFarmacia();
-        doReturn("Paracetamol").when(spyFarmacia).obterEntradaUsuario("Digite o nome do medicamento:");
-        doReturn("H").when(spyFarmacia).obterEntradaUsuario("Digite o nome do funcionário (A, B, C, D):");
-        doReturn("2").when(spyFarmacia).obterEntradaUsuario("Quantos Paracetamol você quer comprar?");
+        doReturn("Paracetamol").when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_MEDICAMENTO);
+        doReturn("H").when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_FUNCIONARIO);
+        doReturn("2").when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_QUANTIDADE_MEDICAMENTO_PARACETAMOL);
 
         spyFarmacia.comprarMedicamento();
 
-        verify(spyFarmacia).obterEntradaUsuario("Digite o nome do medicamento:");
-        verify(spyFarmacia).obterEntradaUsuario("Digite o nome do funcionário (A, B, C, D):");
+        verify(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_MEDICAMENTO);
+        verify(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_DIGITE_FUNCIONARIO);
 
         String output = outputStream.toString().trim();
         assertEquals("Funcionário não encontrado", output);
@@ -116,10 +114,9 @@ class FarmaciaTest {
     @Test
     void testObterQuantidadeMedicamentos_EntradaValida() {
         Farmacia spyFarmacia = criarSpyFarmacia();
-        doReturn("5").when(spyFarmacia).obterEntradaUsuario("Quantos Paracetamol você quer comprar?");
+        doReturn("5").when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_QUANTIDADE_MEDICAMENTO_PARACETAMOL);
 
-        Medicamento medicamento = new Medicamento("Paracetamol", 10, 5.50);
-        int quantidade = spyFarmacia.obterQuantidadeMedicamentos(medicamento);
+        int quantidade = spyFarmacia.obterQuantidadeMedicamentos(TestProvider.MEDICAMENTO_PARACETAMOL);
 
         assertEquals(5, quantidade);
     }
@@ -127,17 +124,16 @@ class FarmaciaTest {
     @Test
     void testObterQuantidadeMedicamentos_EntradaInvalida() {
         Farmacia spyFarmacia = criarSpyFarmacia();
-        doReturn("abc").doReturn("0").doReturn("5").when(spyFarmacia).obterEntradaUsuario("Quantos Paracetamol você quer comprar?");
+        doReturn("abc").doReturn("0").doReturn("5").when(spyFarmacia).obterEntradaUsuario(TestProvider.MSG_QUANTIDADE_MEDICAMENTO_PARACETAMOL);
 
-        Medicamento medicamento = new Medicamento("Paracetamol", 10, 5.50);
-        int quantidade = spyFarmacia.obterQuantidadeMedicamentos(medicamento);
+        int quantidade = spyFarmacia.obterQuantidadeMedicamentos(TestProvider.MEDICAMENTO_PARACETAMOL);
 
         assertEquals(5, quantidade);
     }
 
     @Test
     void testLimparHistorico() {
-        Funcionario funcionario = new Funcionario("A", 2500.00);
+        Funcionario funcionario = new Funcionario(TestProvider.FUNCIONARIO_NOME, 2500.00);
         funcionario.adicionarBonus();
         farmacia.getFuncionarios().get(0).adicionarBonus();
 
@@ -163,8 +159,6 @@ class FarmaciaTest {
         assertTrue(output.contains("Ibuprofeno"));
     }
 
-    //aaa
-
     @Test
     void testListarFuncionarios() {
         Farmacia spyFarmacia = criarSpyFarmacia();
@@ -172,7 +166,7 @@ class FarmaciaTest {
 
         String output = outputStream.toString().trim();
         assertTrue(output.contains("Funcionários:"));
-        assertTrue(output.contains("A"));
+        assertTrue(output.contains(TestProvider.FUNCIONARIO_NOME));
     }
 
     @Test
